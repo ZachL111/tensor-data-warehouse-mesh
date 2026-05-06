@@ -1,44 +1,29 @@
 # tensor-data-warehouse-mesh
 
-`tensor-data-warehouse-mesh` is a C++ project for Data engineering. It turns build a C++ toolkit that studies warehouse behavior through seeded input scenarios, with deterministic summary checks and no network dependency into a small local model with readable fixtures and a direct verification command.
+`tensor-data-warehouse-mesh` explores data engineering with a small C++ codebase and local fixtures. The technical goal is to build a C++ toolkit that studies warehouse behavior through seeded input scenarios, with deterministic summary checks and no network dependency.
 
-## Reading Tensor Data Warehouse Mesh
+## Why It Exists
 
-Start with the README, then open `metadata/project.json` to check the constants behind the examples. After that, `fixtures/cases.csv` shows the compact path and `examples/extended_cases.csv` gives a wider look at the same rule.
+The point is to make a small domain rule concrete enough that a reader can change it and immediately see what broke.
 
-## Purpose
+## Tensor Data Warehouse Mesh Review Notes
 
-This project keeps the domain idea close to the tests. That makes it useful as a reference implementation, a small experiment, or a starting point for a more specialized tool.
+The first comparison I would make is `schema drift` against `schema drift` because it shows where the rule is most opinionated.
 
-## Files Worth Reading
+## Features
 
-- `src`: primary implementation
-- `tests`: verification harness
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
+- `fixtures/domain_review.csv` adds cases for schema drift and lineage depth.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/tensor-data-warehouse-walkthrough.md` walks through the case spread.
+- The C++ code includes a review path for `schema drift` and `schema drift`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
-## What It Does
+## Architecture Notes
 
-- Includes extended examples for pipeline state, including `surge` and `degraded`.
-- Documents quality gates tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
-- Stores project constants and verification metadata in `metadata/project.json`.
-- Adds a repository audit script that checks structure before running the language verifier.
+The repository has two validation layers: the original compact policy fixture and the domain review fixture. They are separate so one can change without hiding failures in the other.
 
-## Design Sketch
-
-The core is a scoring model over demand, capacity, latency, risk, and weight. That keeps schema drift, lineage checks, and pipeline state in one explicit decision path. The threshold is 171, with risk penalty 5, latency penalty 3, and weight bonus 5. The C++ project uses a small library boundary and a compiled assertion harness.
-
-## Setup
-
-Clone the repository, enter the directory, and run the verifier. No database server, cloud account, or token is required.
-
-## Fixture Notes
-
-`examples/extended_cases.csv` adds six named cases. I kept the names plain so failures are easy to read in a terminal: baseline, pressure, surge, degraded, recovery, and boundary.
+The C++ implementation avoids hidden state so fixture changes are easy to reason about.
 
 ## Usage
 
@@ -46,23 +31,10 @@ Clone the repository, enter the directory, and run the verifier. No database ser
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
+## Tests
 
-## Verification
+The same command runs the local verification path. The highest-scoring domain case is `stale` at 235, which lands in `ship`. The most cautious case is `baseline` at 159, which lands in `ship`.
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
+## Limitations And Roadmap
 
-The audit command checks repository structure and README constraints before it delegates to the verifier.
-
-## Next Directions
-
-- Add a comparison mode that shows how decisions change when one signal is adjusted.
-- Add a loader for `examples/extended_cases.csv` and promote selected cases into the language test suite.
-- Add a short report command that prints the score breakdown for a single scenario.
-- Add one more data engineering fixture that focuses on a malformed or borderline input.
-
-## Limits
-
-The scoring model is simple by design. More domain-specific behavior should be added through explicit adapters or extra fixture classes rather than hidden constants.
+No external service is required. A deeper version would add more negative cases and a clearer boundary around invalid input.
